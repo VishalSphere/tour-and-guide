@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Women Safety</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #d3d3d3;
+            font-family: 'Arial', sans-serif;
+        }
+    </style>
+    <script>
+        let sosNumber = null;
+        let sosClickCount = 0;
+        let sosClickTimeout;
+
+        function locateMe() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            window.open(url, '_blank');
+        }
+
+        function showError(error) {
+            const messages = {
+                1: "User denied the request for Geolocation.",
+                2: "Location information is unavailable.",
+                3: "The request to get user location timed out.",
+                0: "An unknown error occurred."
+            };
+            alert(messages[error.code] || "An error occurred.");
+        }
+
+        function setSOSNumber() {
+            const number = prompt("Please enter your emergency contact number:");
+            if (number && number.trim() !== "") {
+                sosNumber = number.trim();
+                alert("Emergency contact number saved successfully.");
+            } else {
+                alert("Invalid number. Please enter a valid emergency contact number.");
+            }
+        }
+
+        function handleSOSClick() {
+            if (!sosNumber) {
+                setSOSNumber();
+                return;
+            }
+
+            sosClickCount++;
+            console.log(`SOS Click Count: ${sosClickCount}`);
+            clearTimeout(sosClickTimeout);
+            sosClickTimeout = setTimeout(() => {
+                sosClickCount = 0;
+            }, 2000);
+
+            if (sosClickCount >= 3) {
+                sendSOSMessage();
+                sosClickCount = 0;
+            }
+        }
+
+        function sendSOSMessage() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const message = `I am in danger. My current location is: https://www.google.com/maps?q=${latitude},${longitude}`;
+
+                    console.log(`Sending SOS Message: ${message} to ${sosNumber}`);
+                    alert(`SOS Alert!\nMessage: ${message}\nSending to: ${sosNumber}`);
+                }, showError, {
+                    enableHighAccuracy: true
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</head>
+
+<body class="flex items-center justify-center min-h-screen">
+    <div class="relative w-full max-w-2xl p-4">
+        <div class="flex justify-center items-center h-full">
+            <div class="relative w-full max-w-2xl h-[500px] bg-white rounded-3xl shadow-lg overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-pink-500 to-pink-300 flex items-center justify-center">
+                    <h1 class="text-white text-2xl font-bold">Women Safe Trips</h1>
+                </div>
+                <div class="absolute top-1/3 left-0 w-full h-2/3 p-4 flex flex-col space-y-4">
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full">Safe Travel Groups</button>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full" onclick="window.location.href='womenguide.html';">
+                    Safe Travel Guides
+                </button>
+
+
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full" onclick="findNearestHotels()">Live Location Hosts &amp; Hotels</button>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full">Live Location Guides</button>
+                </div>
+                <div class="absolute bottom-0 left-0 w-full p-4 flex justify-between">
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-full" onclick="locateMe()">Locate Me</button>
+                    <button class="bg-pink-500 text-white px-4 py-2 rounded-full" onclick="handleSOSClick()">SOS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
